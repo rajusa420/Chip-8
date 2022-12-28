@@ -204,8 +204,8 @@ extension Instruction {
             }
 
         case 0xF:
-            let leastSignEightBits = opcode.leastSigByte
-            switch leastSignEightBits {
+            let leastSigByte = opcode.leastSigByte
+            switch leastSigByte {
             case 0x7:
                 return .setRegToDelayTimer
             case 0xA:
