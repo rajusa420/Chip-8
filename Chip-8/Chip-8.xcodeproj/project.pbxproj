@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		1E49F711295BAC71005D0EF5 /* TestOpcode.ch8 in Resources */ = {isa = PBXBuildFile; fileRef = 1E49F70F295BAB0E005D0EF5 /* TestOpcode.ch8 */; };
+		1E49F71C295C0152005D0EF5 /* DelayTimerTest.ch8 in Resources */ = {isa = PBXBuildFile; fileRef = 1E49F71B295C0152005D0EF5 /* DelayTimerTest.ch8 */; };
+		1E49F71E295C023E005D0EF5 /* Framed.ch8 in Resources */ = {isa = PBXBuildFile; fileRef = 1E49F71D295C023E005D0EF5 /* Framed.ch8 */; };
+		1E49F720295C02AA005D0EF5 /* RandomNumberTest.ch8 in Resources */ = {isa = PBXBuildFile; fileRef = 1E49F71F295C02AA005D0EF5 /* RandomNumberTest.ch8 */; };
 		1E6141F829579AD4004598C1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E6141F729579AD4004598C1 /* AppDelegate.swift */; };
 		1E6141FB29579AD4004598C1 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E6141FA29579AD4004598C1 /* Renderer.swift */; };
 		1E6141FD29579AD4004598C1 /* Chip8ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E6141FC29579AD4004598C1 /* Chip8ViewController.swift */; };
@@ -31,10 +34,14 @@
 		1E614230295B419B004598C1 /* UIViewController+Child.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E61422F295B419B004598C1 /* UIViewController+Child.swift */; };
 		1E614232295B4B44004598C1 /* ButtonId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E614231295B4B44004598C1 /* ButtonId.swift */; };
 		1E614234295B4CB2004598C1 /* KeyboardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E614233295B4CB2004598C1 /* KeyboardButton.swift */; };
+		1EB403AF295FAEB500C70B6B /* CGImage+VideoMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB403AE295FAEB500C70B6B /* CGImage+VideoMemory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1E49F70F295BAB0E005D0EF5 /* TestOpcode.ch8 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TestOpcode.ch8; sourceTree = "<group>"; };
+		1E49F71B295C0152005D0EF5 /* DelayTimerTest.ch8 */ = {isa = PBXFileReference; lastKnownFileType = file; path = DelayTimerTest.ch8; sourceTree = "<group>"; };
+		1E49F71D295C023E005D0EF5 /* Framed.ch8 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Framed.ch8; sourceTree = "<group>"; };
+		1E49F71F295C02AA005D0EF5 /* RandomNumberTest.ch8 */ = {isa = PBXFileReference; lastKnownFileType = file; path = RandomNumberTest.ch8; sourceTree = "<group>"; };
 		1E6141F429579AD4004598C1 /* Chip-8.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Chip-8.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1E6141F729579AD4004598C1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1E6141F929579AD4004598C1 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
@@ -60,6 +67,7 @@
 		1E61422F295B419B004598C1 /* UIViewController+Child.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Child.swift"; sourceTree = "<group>"; };
 		1E614231295B4B44004598C1 /* ButtonId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonId.swift; sourceTree = "<group>"; };
 		1E614233295B4CB2004598C1 /* KeyboardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardButton.swift; sourceTree = "<group>"; };
+		1EB403AE295FAEB500C70B6B /* CGImage+VideoMemory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGImage+VideoMemory.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +119,7 @@
 				1E6142252958CC38004598C1 /* UInt16+Bits.swift */,
 				1E61422B295B328C004598C1 /* UInt8+Bits.swift */,
 				1E614227295A5C5C004598C1 /* UIImage+VideoMemory.swift */,
+				1EB403AE295FAEB500C70B6B /* CGImage+VideoMemory.swift */,
 				1E61421F2957D757004598C1 /* Array+Subscript.swift */,
 			);
 			path = Extensions;
@@ -150,6 +159,9 @@
 			children = (
 				1E6142172957C6F7004598C1 /* IBMLogo.ch8 */,
 				1E49F70F295BAB0E005D0EF5 /* TestOpcode.ch8 */,
+				1E49F71B295C0152005D0EF5 /* DelayTimerTest.ch8 */,
+				1E49F71D295C023E005D0EF5 /* Framed.ch8 */,
+				1E49F71F295C02AA005D0EF5 /* RandomNumberTest.ch8 */,
 			);
 			path = ROM;
 			sourceTree = "<group>";
@@ -243,11 +255,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E49F71C295C0152005D0EF5 /* DelayTimerTest.ch8 in Resources */,
 				1E61420729579AD6004598C1 /* LaunchScreen.storyboard in Resources */,
 				1E6142182957C6F7004598C1 /* IBMLogo.ch8 in Resources */,
 				1E49F711295BAC71005D0EF5 /* TestOpcode.ch8 in Resources */,
 				1E61420429579AD6004598C1 /* Assets.xcassets in Resources */,
+				1E49F71E295C023E005D0EF5 /* Framed.ch8 in Resources */,
 				1E61420229579AD4004598C1 /* Main.storyboard in Resources */,
+				1E49F720295C02AA005D0EF5 /* RandomNumberTest.ch8 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,6 +273,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EB403AF295FAEB500C70B6B /* CGImage+VideoMemory.swift in Sources */,
 				1E61422A295A648F004598C1 /* Pixel.swift in Sources */,
 				1E6141FF29579AD4004598C1 /* Shaders.metal in Sources */,
 				1E6141FB29579AD4004598C1 /* Renderer.swift in Sources */,

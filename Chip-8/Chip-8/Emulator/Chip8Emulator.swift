@@ -50,7 +50,7 @@ class Chip8Emulator {
     var soundTimer: Byte = 0
     var keypad: [Byte] = [Byte](repeating: 0, count: Constants.keypadKeyCount)
 
-    var cycleCount: Int = 0
+    var isVideoBufferDirty: Bool = true
     
     init() {
         memory.initialize(repeating: 0)
@@ -82,9 +82,30 @@ class Chip8Emulator {
         copyIntoMemory(buffer: &romDataArray, startLocation: Constants.programStartMemoryLocation)
     }
 
+    func getUIImageOfVideoMemoryIfDirty() -> UIImage? {
+        guard isVideoBufferDirty else {
+            return nil
+        }
+
+        return getUIImageOfVideoMemory()
+    }
+
     func getUIImageOfVideoMemory() -> UIImage? {
         let pixelBuffer = Pixel.pixelBuffer(from: videoMemory, width: Constants.videoWidth, height: Constants.videoHeight)
         return UIImage.fromPixelBuffer(buffer: pixelBuffer, width: Int(Constants.videoWidth), height: Int(Constants.videoHeight))
+    }
+
+    func getCGImageOfVideoMemoryIfDirty() -> CGImage? {
+        guard isVideoBufferDirty else {
+            return nil
+        }
+
+        return getCGImageOfVideoMemory()
+    }
+
+    func getCGImageOfVideoMemory() -> CGImage? {
+        let pixelBuffer = Pixel.pixelBuffer(from: videoMemory, width: Constants.videoWidth, height: Constants.videoHeight)
+        return CGImage.fromPixelBuffer(buffer: pixelBuffer, width: Int(Constants.videoWidth), height: Int(Constants.videoHeight))
     }
 
     func loadFontSet() {
@@ -113,11 +134,13 @@ class Chip8Emulator {
             let copyStartLocation = Int(startLocation)
             let copyEndLocation = copyStartLocation + bufferPointer.count
             videoMemory[copyStartLocation..<copyEndLocation] = bufferPointer[0..<bufferPointer.count]
+            isVideoBufferDirty = true
         }
     }
 
     private func clearVideoMemory() {
         videoMemory.assign(repeating: 0)
+        isVideoBufferDirty = true
     }
 }
 
@@ -330,6 +353,7 @@ extension Chip8Emulator {
 
                     // Xor the current pixel in view memory with the sprite pixel
                     videoMemory[videoMemoryOffset] = videoPixel ^ Constants.videoPixelOn
+                    isVideoBufferDirty = true
                 }
             }
         }

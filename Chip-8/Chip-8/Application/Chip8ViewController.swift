@@ -12,6 +12,7 @@ import SwiftUI
 class Chip8ViewController: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var keyboardContainerView: UIView!
+    @IBOutlet weak var mtkView: MTKView!
 
     lazy var defaultDevice: MTLDevice = {
         guard let defaultDevice = MTLCreateSystemDefaultDevice() else {
@@ -21,38 +22,12 @@ class Chip8ViewController: UIViewController {
         return defaultDevice
     }()
 
-    lazy var mtkView: MTKView = {
-        guard let mtkView = view as? MTKView else {
-            fatalError("View failed to initialize!")
-        }
-
-        mtkView.device = defaultDevice
-        mtkView.backgroundColor = UIColor.black
-
-        return mtkView
-    }()
-
     lazy var renderer: Renderer = {
         guard let renderer = Renderer(metalKitView: mtkView) else {
             fatalError("Renderer cannot be initialized!")
         }
 
         return renderer
-    }()
-
-    let vertexData: [Float] = [
-       0.0,  1.0, 0.0,
-      -1.0, -1.0, 0.0,
-       1.0, -1.0, 0.0
-    ]
-
-    lazy var vertexBuffer: MTLBuffer = {
-        let dataSize = vertexData.count * MemoryLayout.size(ofValue: vertexData[0])
-        guard let vertexBuffer = defaultDevice.makeBuffer(bytes: vertexData, length: dataSize, options: []) else {
-            fatalError("Failed to create vertex buffer!")
-        }
-
-        return vertexBuffer
     }()
 
     lazy var keyboardViewModel: KeyboardViewModel = {
@@ -104,8 +79,13 @@ class Chip8ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        mtkView.device = defaultDevice
+        mtkView.backgroundColor = UIColor.black
+
         // renderer.mtkView(mtkView, drawableSizeWillChange: mtkView.drawableSize)
-        // mtkView.delegate = renderer
+        mtkView.delegate = renderer
+        // imageView.isHidden = true
+        
         chip8Emulator.loadROM()
         setupDisplayLoop()
         setupRunLoop()
@@ -131,9 +111,16 @@ class Chip8ViewController: UIViewController {
         }
 
         displayLoop = DisplayLoop() {
-            if let videoImage = self.chip8Emulator.getUIImageOfVideoMemory() {
+            if let videoImage = self.chip8Emulator.getUIImageOfVideoMemoryIfDirty() {
                 self.imageView.image = videoImage
             }
+
+//            if let videoImage = self.chip8Emulator.getCGImageOfVideoMemoryIfDirty() {
+//                self.renderer.updateTexture(
+//                    from: videoImage,
+//                    width: CGFloat(Chip8Emulator.Constants.videoWidth),
+//                    height: CGFloat(Chip8Emulator.Constants.videoHeight))
+//            }
         }
     }
 }
