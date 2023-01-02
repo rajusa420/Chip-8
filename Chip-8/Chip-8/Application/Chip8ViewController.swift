@@ -82,9 +82,9 @@ class Chip8ViewController: UIViewController {
         mtkView.device = defaultDevice
         mtkView.backgroundColor = UIColor.black
 
-        // renderer.mtkView(mtkView, drawableSizeWillChange: mtkView.drawableSize)
+        renderer.mtkView(mtkView, drawableSizeWillChange: mtkView.drawableSize)
         mtkView.delegate = renderer
-        // imageView.isHidden = true
+        imageView.isHidden = true
         
         chip8Emulator.loadROM()
         setupDisplayLoop()
@@ -111,16 +111,16 @@ class Chip8ViewController: UIViewController {
         }
 
         displayLoop = DisplayLoop() {
-            if let videoImage = self.chip8Emulator.getUIImageOfVideoMemoryIfDirty() {
-                self.imageView.image = videoImage
-            }
-
-//            if let videoImage = self.chip8Emulator.getCGImageOfVideoMemoryIfDirty() {
-//                self.renderer.updateTexture(
-//                    from: videoImage,
-//                    width: CGFloat(Chip8Emulator.Constants.videoWidth),
-//                    height: CGFloat(Chip8Emulator.Constants.videoHeight))
+//            if let videoImage = self.chip8Emulator.getUIImageOfVideoMemoryIfDirty() {
+//                self.imageView.image = videoImage
 //            }
+
+            if let videoImage = self.chip8Emulator.getCGImageOfVideoMemoryIfDirty() {
+                self.renderer.updateTexture(
+                    from: videoImage,
+                    width: CGFloat(Chip8Emulator.Constants.videoWidth),
+                    height: CGFloat(Chip8Emulator.Constants.videoHeight))
+            }
         }
     }
 }

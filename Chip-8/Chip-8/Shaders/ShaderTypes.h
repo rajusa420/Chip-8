@@ -21,29 +21,27 @@ typedef NSInteger EnumBackingType;
 
 #include <simd/simd.h>
 
-typedef NS_ENUM(EnumBackingType, BufferIndex)
-{
-    BufferIndexMeshPositions = 0,
-    BufferIndexMeshGenerics  = 1,
-    BufferIndexUniforms      = 2
-};
 
-typedef NS_ENUM(EnumBackingType, VertexAttribute)
+typedef enum AAPLVertexInputIndex
 {
-    VertexAttributePosition  = 0,
-    VertexAttributeTexcoord  = 1,
-};
+    AAPLVertexInputIndexVertices     = 0,
+    AAPLVertexInputIndexViewportSize = 1,
+} AAPLVertexInputIndex;
 
-typedef NS_ENUM(EnumBackingType, TextureIndex)
+// Texture index values shared between shader and C code to ensure Metal shader buffer inputs match
+//   Metal API texture set calls
+typedef enum AAPLTextureIndex
 {
-    TextureIndexColor    = 0,
-};
+    AAPLTextureIndexBaseColor = 0,
+} AAPLTextureIndex;
 
 typedef struct
 {
-    matrix_float4x4 projectionMatrix;
-    matrix_float4x4 modelViewMatrix;
-} Uniforms;
+    vector_float2 position;
+
+    // 2D texture coordinate
+    vector_float2 textureCoordinate;
+} AAPLVertex;
 
 #endif /* ShaderTypes_h */
 

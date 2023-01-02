@@ -11,34 +11,24 @@ import Metal
 import MetalKit
 import simd
 
-// The 256 byte aligned size of our uniform structure
-let alignedUniformsSize = (MemoryLayout<Uniforms>.size + 0xFF) & -0x100
-
-let maxBuffersInFlight = 3
-
-enum RendererError: Error {
-    case badVertexDescriptor
-}
-
 class Renderer: NSObject, MTKViewDelegate {
     public let device: MTLDevice
     let commandQueue: MTLCommandQueue
     let textureLoader: MTKTextureLoader
 
-    let vertexData: [Float] = [
-        -1.0,  1.0, 0.0,
-        -1.0, -1.0, 0.0,
-         1.0, -1.0, 0.0,
+    lazy var vertexData: [AAPLVertex] = [
+        AAPLVertex(position: vector_float2(x: -1.0, y:  1.0), textureCoordinate: vector_float2(x: -1.0, y:  1.0)),
+        AAPLVertex(position: vector_float2(x: -1.0, y: -1.0), textureCoordinate: vector_float2(x: -1.0, y: -1.0)),
+        AAPLVertex(position: vector_float2(x:  1.0, y: -1.0), textureCoordinate: vector_float2(x:  1.0, y: -1.0)),
 
-         -1.0,  1.0, 0.0,
-          1.0,  1.0, 0.0,
-          1.0, -1.0, 0.0
+        AAPLVertex(position: vector_float2(x: -1.0, y:  1.0), textureCoordinate: vector_float2(x: -1.0, y:  1.0)),
+        AAPLVertex(position: vector_float2(x:  1.0, y:  1.0), textureCoordinate: vector_float2(x:  1.0, y:  1.0)),
+        AAPLVertex(position: vector_float2(x:  1.0, y: -1.0), textureCoordinate: vector_float2(x:  1.0, y: -1.0))
     ]
+
     lazy var vertexBuffer: MTLBuffer = {
-
-
         let dataSize = vertexData.count * MemoryLayout.size(ofValue: vertexData[0])
-        guard let vertexBuffer = device.makeBuffer(bytes: vertexData, length: dataSize, options: []) else {
+        guard let vertexBuffer = device.makeBuffer(bytes: vertexData, length: dataSize, options: .storageModeShared) else {
             fatalError("Failed to create vertex buffer!")
         }
 
@@ -50,13 +40,18 @@ class Renderer: NSObject, MTKViewDelegate {
     var pipelineState: MTLRenderPipelineState
 
     init?(metalKitView: MTKView) {
-        device = metalKitView.device!
-        metalKitView.colorPixelFormat = .rgba8Unorm
+        guard let device = metalKitView.device else {
+            return nil
+        }
+
+        self.device = device
 
         guard let queue = self.device.makeCommandQueue() else {
             return nil
         }
+
         commandQueue = queue
+        metalKitView.colorPixelFormat = .rgba8Unorm
 
         textureLoader = MTKTextureLoader(device: device)
 
@@ -98,12 +93,11 @@ class Renderer: NSObject, MTKViewDelegate {
         commandEncoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: Double(viewportSize.x), height: Double(viewportSize.y), znear: -1.0, zfar: 1.0))
         commandEncoder.setRenderPipelineState(pipelineState)
 
-        commandEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-        commandEncoder.setVertexBytes(&viewportSize, length: MemoryLayout.size(ofValue: viewportSize), index: 1)
+        commandEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: Int(AAPLVertexInputIndexVertices.rawValue))
 
-        commandEncoder.setFragmentTexture(texture, index: 0)
+        commandEncoder.setFragmentTexture(texture, index: Int(AAPLTextureIndexBaseColor.rawValue))
 
-        commandEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
+        commandEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexData.count)
 
         commandEncoder.endEncoding()
 
@@ -125,13 +119,14 @@ class Renderer: NSObject, MTKViewDelegate {
     ) -> MTLRenderPipelineState? {
         let library = device.makeDefaultLibrary()
 
-        let vertexFunction = library?.makeFunction(name: "basicVertex")
-        let fragmentFunction = library?.makeFunction(name: "basicFragment")
+        let vertexFunction = library?.makeFunction(name: "vertexShader")
+        let fragmentFunction = library?.makeFunction(name: "samplingShader")
 
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         pipelineDescriptor.label = "RenderPipeline"
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
+
         pipelineDescriptor.colorAttachments[0].pixelFormat = .rgba8Unorm
         pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
 
