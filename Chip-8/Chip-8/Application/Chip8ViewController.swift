@@ -111,10 +111,6 @@ class Chip8ViewController: UIViewController {
         }
 
         displayLoop = DisplayLoop() {
-//            if let videoImage = self.chip8Emulator.getUIImageOfVideoMemoryIfDirty() {
-//                self.imageView.image = videoImage
-//            }
-
             if let videoImage = self.chip8Emulator.getCGImageOfVideoMemoryIfDirty() {
                 self.renderer.updateTexture(
                     from: videoImage,

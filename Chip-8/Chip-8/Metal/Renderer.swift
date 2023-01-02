@@ -36,9 +36,13 @@ class Renderer: NSObject, MTKViewDelegate {
         mtkView = metalKitView
         super.init()
     }
-    
+
     func updateTexture(from cgImage: CGImage, width: CGFloat, height: CGFloat) {
-        guard case let image = CIImage(cgImage: cgImage),
+        self.image = CIImage(cgImage: cgImage)
+    }
+    
+    func draw(in view: MTKView) {
+        guard let image = image,
               let commandBuffer = commandQueue.makeCommandBuffer(),
               let view = mtkView,
               let drawable = view.currentDrawable
@@ -67,7 +71,7 @@ class Renderer: NSObject, MTKViewDelegate {
                 "inputTransform": transform
                 ]
             ),
-              var scaledImage: CIImage = filter.outputImage else {
+              let scaledImage: CIImage = filter.outputImage else {
             return
         }
 
@@ -82,8 +86,6 @@ class Renderer: NSObject, MTKViewDelegate {
         commandBuffer.present(drawable)
         commandBuffer.commit()
     }
-    
-    func draw(in view: MTKView) {}
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 }
