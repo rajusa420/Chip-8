@@ -71,12 +71,6 @@ class Renderer: NSObject, MTKViewDelegate {
             return
         }
 
-        #if targetEnvironment(simulator)
-            scaledImage = scaledImage.transformed(by: CGAffineTransform(scaleX: 1, y: -1))
-                .transformed(by: CGAffineTransform(translationX: 0, y: scaledImage.extent.height))
-        #endif
-
-        let scaledImageExtent = scaledImage.extent
         context.render(
             scaledImage,
             to: drawable.texture,

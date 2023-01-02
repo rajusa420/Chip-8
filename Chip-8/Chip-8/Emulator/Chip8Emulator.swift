@@ -72,7 +72,7 @@ class Chip8Emulator {
     }
 
     func loadROM() {
-        guard let romURL = Bundle.main.url(forResource: "TestOpcode", withExtension: "ch8"),
+        guard let romURL = Bundle.main.url(forResource: "SpaceInvaders", withExtension: "ch8"),
               let romData = try? Data(contentsOf: romURL) else {
             fatalError("Failed to find and load ROM file")
         }

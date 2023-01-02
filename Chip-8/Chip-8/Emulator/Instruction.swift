@@ -237,7 +237,7 @@ extension Instruction {
 
 extension Instruction {
     func execute(opcode: Word, emulator: Chip8Emulator) {
-        print("\(String(describing: self)): \(String(format:"0x%04X", opcode))")
+        // print("\(String(describing: self)): \(String(format:"0x%04X", opcode))")
 
         switch self {
         case .cls:

@@ -34,6 +34,7 @@
 		1E614232295B4B44004598C1 /* ButtonId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E614231295B4B44004598C1 /* ButtonId.swift */; };
 		1E614234295B4CB2004598C1 /* KeyboardButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E614233295B4CB2004598C1 /* KeyboardButton.swift */; };
 		1EB403AF295FAEB500C70B6B /* CGImage+VideoMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB403AE295FAEB500C70B6B /* CGImage+VideoMemory.swift */; };
+		1EDC2BFA29633970008EE012 /* SpaceInvaders.ch8 in Resources */ = {isa = PBXBuildFile; fileRef = 1EDC2BF929633923008EE012 /* SpaceInvaders.ch8 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,6 +66,7 @@
 		1E614231295B4B44004598C1 /* ButtonId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonId.swift; sourceTree = "<group>"; };
 		1E614233295B4CB2004598C1 /* KeyboardButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardButton.swift; sourceTree = "<group>"; };
 		1EB403AE295FAEB500C70B6B /* CGImage+VideoMemory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGImage+VideoMemory.swift"; sourceTree = "<group>"; };
+		1EDC2BF929633923008EE012 /* SpaceInvaders.ch8 */ = {isa = PBXFileReference; lastKnownFileType = file; path = SpaceInvaders.ch8; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,6 +151,7 @@
 				1E49F71B295C0152005D0EF5 /* DelayTimerTest.ch8 */,
 				1E49F71D295C023E005D0EF5 /* Framed.ch8 */,
 				1E49F71F295C02AA005D0EF5 /* RandomNumberTest.ch8 */,
+				1EDC2BF929633923008EE012 /* SpaceInvaders.ch8 */,
 			);
 			path = ROM;
 			sourceTree = "<group>";
@@ -242,6 +245,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1EDC2BFA29633970008EE012 /* SpaceInvaders.ch8 in Resources */,
 				1E49F71C295C0152005D0EF5 /* DelayTimerTest.ch8 in Resources */,
 				1E61420729579AD6004598C1 /* LaunchScreen.storyboard in Resources */,
 				1E6142182957C6F7004598C1 /* IBMLogo.ch8 in Resources */,
