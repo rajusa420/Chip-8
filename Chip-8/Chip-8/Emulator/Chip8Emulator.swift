@@ -87,6 +87,7 @@ class Chip8Emulator {
             return nil
         }
 
+        defer { isVideoBufferDirty = false }
         return getUIImageOfVideoMemory()
     }
 
@@ -100,6 +101,8 @@ class Chip8Emulator {
             return nil
         }
 
+        defer { isVideoBufferDirty = false }
+        
         return getCGImageOfVideoMemory()
     }
 

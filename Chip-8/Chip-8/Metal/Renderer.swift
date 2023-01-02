@@ -14,30 +14,10 @@ import simd
 class Renderer: NSObject, MTKViewDelegate {
     public let device: MTLDevice
     let commandQueue: MTLCommandQueue
-    let textureLoader: MTKTextureLoader
-
-    lazy var vertexData: [AAPLVertex] = [
-        AAPLVertex(position: vector_float2(x: -1.0, y:  1.0), textureCoordinate: vector_float2(x: -1.0, y:  1.0)),
-        AAPLVertex(position: vector_float2(x: -1.0, y: -1.0), textureCoordinate: vector_float2(x: -1.0, y: -1.0)),
-        AAPLVertex(position: vector_float2(x:  1.0, y: -1.0), textureCoordinate: vector_float2(x:  1.0, y: -1.0)),
-
-        AAPLVertex(position: vector_float2(x: -1.0, y:  1.0), textureCoordinate: vector_float2(x: -1.0, y:  1.0)),
-        AAPLVertex(position: vector_float2(x:  1.0, y:  1.0), textureCoordinate: vector_float2(x:  1.0, y:  1.0)),
-        AAPLVertex(position: vector_float2(x:  1.0, y: -1.0), textureCoordinate: vector_float2(x:  1.0, y: -1.0))
-    ]
-
-    lazy var vertexBuffer: MTLBuffer = {
-        let dataSize = vertexData.count * MemoryLayout.size(ofValue: vertexData[0])
-        guard let vertexBuffer = device.makeBuffer(bytes: vertexData, length: dataSize, options: .storageModeShared) else {
-            fatalError("Failed to create vertex buffer!")
-        }
-
-        return vertexBuffer
-    }()
-
-    var viewportSize: SIMD2<UInt32> = SIMD2(x: 0, y: 0)
-    var texture: MTLTexture?
-    var pipelineState: MTLRenderPipelineState
+    let context: CIContext
+    let colorSpace = CGColorSpaceCreateDeviceRGB()
+    var image: CIImage?
+    weak var mtkView: MTKView?
 
     init?(metalKitView: MTKView) {
         guard let device = metalKitView.device else {
@@ -45,97 +25,71 @@ class Renderer: NSObject, MTKViewDelegate {
         }
 
         self.device = device
+        self.context = CIContext(mtlDevice: device)
 
         guard let queue = self.device.makeCommandQueue() else {
             return nil
         }
 
         commandQueue = queue
-        metalKitView.colorPixelFormat = .rgba8Unorm
-
-        textureLoader = MTKTextureLoader(device: device)
-
-        guard let renderPipeline = Renderer.buildRenderPipelineWithDevice(
-            device: device,
-            metalKitView: metalKitView
-        ) else {
-            return nil
-        }
-
-        pipelineState = renderPipeline
-
+        metalKitView.framebufferOnly = false
+        mtkView = metalKitView
         super.init()
     }
     
     func updateTexture(from cgImage: CGImage, width: CGFloat, height: CGFloat) {
-        let textureLoaderOptions = [
-            MTKTextureLoader.Option.textureUsage: NSNumber(value: MTLTextureUsage.shaderRead.rawValue),
-            MTKTextureLoader.Option.textureStorageMode: NSNumber(value: MTLStorageMode.`private`.rawValue)
-        ]
-
-        guard let texture = try? textureLoader.newTexture(cgImage: cgImage, options: textureLoaderOptions) else {
-            return
-        }
-
-        self.texture = texture
-    }
-    
-    func draw(in view: MTKView) {
-        guard let texture = texture,
-              let renderPassDescriptor = view.currentRenderPassDescriptor,
+        guard case let image = CIImage(cgImage: cgImage),
               let commandBuffer = commandQueue.makeCommandBuffer(),
-              let commandEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
+              let view = mtkView,
+              let drawable = view.currentDrawable
         else {
             return
         }
 
-        commandEncoder.label = "Chip-8 Render Encoder"
-        commandEncoder.setViewport(MTLViewport(originX: 0.0, originY: 0.0, width: Double(viewportSize.x), height: Double(viewportSize.y), znear: -1.0, zfar: 1.0))
-        commandEncoder.setRenderPipelineState(pipelineState)
+        drawable.layer.backgroundColor = UIColor.black.cgColor
 
-        commandEncoder.setVertexBuffer(vertexBuffer, offset: 0, index: Int(AAPLVertexInputIndexVertices.rawValue))
+        let dpi = UIScreen.main.nativeScale
+        let width = view.bounds.width * dpi
+        let height = view.bounds.height * dpi
+        let rect = CGRect(x: 0, y: 0, width: width, height: height)
 
-        commandEncoder.setFragmentTexture(texture, index: Int(AAPLTextureIndexBaseColor.rawValue))
-
-        commandEncoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertexData.count)
-
-        commandEncoder.endEncoding()
-
-        if let drawable = view.currentDrawable {
-            commandBuffer.present(drawable)
+        let extent = image.extent
+        let xScale = extent.width > 0 ? width  / extent.width  : 1
+        let yScale = extent.height > 0 ? height / extent.height : 1
+        let scale = min(xScale, yScale)
+        let tx = (width - extent.width * scale) / 2
+        let ty = (height - extent.height * scale) / 2
+        let transform = CGAffineTransform(a: scale, b: 0, c: 0, d: scale, tx: tx, ty: ty)
+        guard let filter = CIFilter(
+            name: "CIAffineTransform",
+            parameters: [
+                "inputImage": image,
+                "inputTransform": transform
+                ]
+            ),
+              var scaledImage: CIImage = filter.outputImage else {
+            return
         }
 
+        #if targetEnvironment(simulator)
+            scaledImage = scaledImage.transformed(by: CGAffineTransform(scaleX: 1, y: -1))
+                .transformed(by: CGAffineTransform(translationX: 0, y: scaledImage.extent.height))
+        #endif
+
+        let scaledImageExtent = scaledImage.extent
+        context.render(
+            scaledImage,
+            to: drawable.texture,
+            commandBuffer: commandBuffer,
+            bounds: rect,
+            colorSpace: colorSpace
+        )
+
+        commandBuffer.present(drawable)
         commandBuffer.commit()
     }
+    
+    func draw(in view: MTKView) {}
 
-    func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        viewportSize.x = UInt32(size.width)
-        viewportSize.y = UInt32(size.height)
-    }
-
-    class func buildRenderPipelineWithDevice(
-        device: MTLDevice,
-        metalKitView: MTKView
-    ) -> MTLRenderPipelineState? {
-        let library = device.makeDefaultLibrary()
-
-        let vertexFunction = library?.makeFunction(name: "vertexShader")
-        let fragmentFunction = library?.makeFunction(name: "samplingShader")
-
-        let pipelineDescriptor = MTLRenderPipelineDescriptor()
-        pipelineDescriptor.label = "RenderPipeline"
-        pipelineDescriptor.vertexFunction = vertexFunction
-        pipelineDescriptor.fragmentFunction = fragmentFunction
-
-        pipelineDescriptor.colorAttachments[0].pixelFormat = .rgba8Unorm
-        pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
-
-        do {
-            return try device.makeRenderPipelineState(descriptor: pipelineDescriptor)
-        } catch {
-            print("Error: \(error.localizedDescription)")
-        }
-
-        return nil
-    }
+    func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {}
 }
